@@ -46,6 +46,7 @@
 
 /**
  * <a href="foo.html"><u class="Stretch"></u></a> to make a whole box click-able
+ * also to be use with boxes with a ratio (see 'ratio')
  * the container must be *positioned* for "Stretch" to cover it
  * watch out for stacking context in case the box contains "clickable" elements
  */
@@ -58,7 +59,7 @@
 }
 
 /**
- * make IE 6/7/8 clickable
+ * make IE 7/8 clickable
  * Warning: this kills the context menu tho (right-click menu is not what is expected)
  */
 a:hover .Stretch {
@@ -71,17 +72,18 @@ a:hover .Stretch {
  */
 .Cf:before,
 .Cf:after {
-    content: " ";
-    display: table;
+  content: ".";
+  display: block;
+  height: 0;
+  overflow: hidden;
 }
-
 .Cf:after {
     clear: both;
 }
-
 .Cf {
-    zoom: 1;
+    zoom: 1; /* IE < 8 */
 }
+
 
 /**
  * Block Formatting Contexts ===================================================
@@ -118,10 +120,10 @@ a:hover .Stretch {
 }
 
 /**
- * BFC via table-cell (fails if it contains large block of content - i.e. image, long string, etc.)
+ * BFC via table-cell (fails if it contains large block of content - i.e. a large image, a long string, etc.)
  * 1. this is a hack, it does not make the box grow up to 1600px, just enough to fill the container
  */
-.Nbfc {
+.Bfc-hack {
     display: table-cell;
     width: 1600px; /* 1 */
     *width: auto;
@@ -169,7 +171,7 @@ a:hover .Stretch {
 /**
  * This makes the element accessible to screen-reader users
  * This does not remove the box from the flow
- * Note that this techniques creates perf issue in old iPad and is not suited for RTL context
+ * Note that this techniques creates perf issue (i.e. old iPad and is not suited for RTL context)
  */
 .TextHidden {
     text-indent: -999em;
@@ -223,7 +225,7 @@ a:hover .Stretch {
 
 /**
  * vertical-align:top; is the default styling for table cells
- * the rules below allow to ovewrite this styling by applying a class on table-rows
+ * the rules below allow to overwrite this styling by applying a class on table-rows (tr.Va-m)
  */
 
 .Va-m > th,
@@ -386,7 +388,7 @@ a:hover .Stretch {
 /**
  * These classes are meant to create boxes that keep their aspect ratio
  * 1. 4:3 ratio (3/4 = .75 = 75%)
- * 2. this box will stretch inside '.RatioWrap, .Ratio-4\:3, etc.' (the wrappers)
+ * 2. use the class "Stretch" inside '.RatioWrap, .Ratio-4\:3, etc. to "cover" a wrapper
  * '.SquareBox' and '.LandscapeBox' are for single elements (i.e. list item to display background images only)
  * 3. for videos embedded in an iframe
  */
@@ -423,14 +425,6 @@ a:hover .Stretch {
 
 .LandscapeBox {
     padding-bottom: 50%;
-}
-
-.RatioBox {            /* 2 */
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
 }
 
 .StretchNestedIframe iframe { /* 3 */
@@ -589,13 +583,12 @@ a.LineClamp:after {
 /**
  * Number of lines/font-size/line-height (the last must be unit-less)
  */
-$line-clamp_values: (2, 1.2em, 1.25),(3, 1.8em, 1.5),(4, 20px, 2);
 @include line-clamp($line-clamp_values);
 
 /**
  * :hover rules (common mouseover effects)
- * $namespace is used to add weight
- * it is paired with :focus so it can be used to reveal hidden focusable elements to keyboard users
+ * $namespace is used as those could compete with rules with higher specificity
+ * 1. it is paired with :focus so it can be used to reveal hidden focusable elements to keyboard users
  */
 
 #{$namespace} .Td-n-\:h:hover,
@@ -610,6 +603,6 @@ $line-clamp_values: (2, 1.2em, 1.25),(3, 1.8em, 1.5),(4, 20px, 2);
 
 #{$namespace} .Op-1-\:h:hover,
 #{$namespace} .Op-1-\:h:focus {
-    opacity: 1;
+    opacity: 1; /* 1 */
     filter: alpha(opacity = 100);
 }
