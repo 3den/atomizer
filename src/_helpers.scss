@@ -114,9 +114,7 @@ a:hover .Stretch {
  */
 .Bfc {
     overflow: hidden;
-    @if $desktop {
     zoom: 1;
-    }
 }
 
 /**
